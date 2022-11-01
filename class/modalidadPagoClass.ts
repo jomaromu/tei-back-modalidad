@@ -14,11 +14,13 @@ export class ModalidadPagoClass {
 
   crearModalidadPago(req: any, resp: Response): void {
     const idCreador = new mongoose.Types.ObjectId(req.usuario._id);
+    const foranea = new mongoose.Types.ObjectId(req.body.foranea);
     const nombre: string = req.body.nombre;
     const estado: boolean = req.body.estado;
 
     const nuevaModalidad = new modalidadPagoModel({
       idCreador,
+      foranea,
       nombre,
       estado,
     });
@@ -47,7 +49,8 @@ export class ModalidadPagoClass {
   }
 
   editarModalidad(req: any, resp: Response): void {
-    const id = new mongoose.Types.ObjectId(req.get("id"));
+    const _id = new mongoose.Types.ObjectId(req.body.id);
+    const foranea = new mongoose.Types.ObjectId(req.body.foranea);
     const nombre: string = req.body.nombre;
     const estado: boolean = req.body.estado;
 
@@ -56,8 +59,8 @@ export class ModalidadPagoClass {
       estado,
     };
 
-    modalidadPagoModel.findById(
-      id,
+    modalidadPagoModel.findOne(
+      { _id, foranea },
       (err: CallbackError, modalidadDB: ModaliddadPagoInterface) => {
         if (err) {
           return resp.json({
@@ -78,8 +81,8 @@ export class ModalidadPagoClass {
           query.nombre = modalidadDB.nombre;
         }
 
-        modalidadPagoModel.findByIdAndUpdate(
-          id,
+        modalidadPagoModel.findOneAndUpdate(
+          { _id, foranea },
           query,
           { new: true },
           (err: CallbackError, modalidadDB: any) => {
@@ -107,10 +110,11 @@ export class ModalidadPagoClass {
   }
 
   obtenerModalidad(req: any, resp: Response) {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
 
-    modalidadPagoModel.findById(
-      id,
+    modalidadPagoModel.findOne(
+      { _id, foranea },
       (err: CallbackError, modalidadDB: ModaliddadPagoInterface) => {
         if (err) {
           return resp.json({
@@ -136,8 +140,9 @@ export class ModalidadPagoClass {
   }
 
   obtenerModalidades(req: any, resp: Response) {
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
     modalidadPagoModel
-      .find({})
+      .find({ foranea })
       .populate("idCreador")
       .exec(
         (err: CallbackError, modalidadesDB: Array<ModaliddadPagoInterface>) => {
@@ -158,10 +163,11 @@ export class ModalidadPagoClass {
   }
 
   eliminarModalidad(req: any, resp: Response) {
-    const id = req.get("id");
+    const _id = new mongoose.Types.ObjectId(req.get("id"));
+    const foranea = new mongoose.Types.ObjectId(req.get("foranea"));
 
-    modalidadPagoModel.findByIdAndDelete(
-      id,
+    modalidadPagoModel.findOneAndDelete(
+      { _id, foranea },
       {},
       (err: CallbackError, modalidadDB: any) => {
         if (err) {
